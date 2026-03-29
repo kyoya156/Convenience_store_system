@@ -36,7 +36,10 @@ router.beforeEach(async (to) => {
   // Restore user from token on page refresh
   if (auth.token && !auth.user) await auth.fetchMe()
 
-  if (to.meta.requiresAuth && !auth.isLoggedIn)  return '/login'
+  
+if (to.meta.requiresAuth && !auth.isLoggedIn) {
+  return { path: '/login', query: { redirect: to.fullPath } }
+}
   if (to.meta.requiresAdmin && !auth.isAdmin)     return '/'
 })
 

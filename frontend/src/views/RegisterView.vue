@@ -26,13 +26,17 @@ async function handleRegister() {
 
   try {
     await auth.register(name.value, email.value, password.value)
-    router.push('/')
+    router.push('/catalogue')
   } catch (err) {
     error.value = err.response?.data?.error || 'Registration failed. Please try again.'
+
   } finally {
     loading.value = false
   }
 }
+
+
+
 </script>
 
 <template>
