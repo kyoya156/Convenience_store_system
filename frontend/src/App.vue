@@ -21,8 +21,6 @@ function logout() {
       </div>
 
       <div class="nav-links">
-        <RouterLink to="/catalogue">Shop</RouterLink>
-
         <RouterLink to="/cart" class="cart-link">
           Cart
           <span v-if="cart.count > 0" class="cart-badge">{{ cart.count }}</span>
