@@ -2,12 +2,12 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 
 const routes = [
-  { path: '/',          component: () => import('../views/HomeView.vue') },
-  { path: '/login',     component: () => import('../views/LoginView.vue') },
-  { path: '/register',  component: () => import('../views/RegisterView.vue') },
-  { path: '/catalogue', component: () => import('../views/CatalogueView.vue') },
-  { path: '/product/:id', component: () => import('../views/ProductDetailView.vue') },
-  { path: '/cart',      component: () => import('../views/CartView.vue') },
+  { path: '/',              component: () => import('../views/CatalogueView.vue') },
+  { path: '/login',         component: () => import('../views/LoginView.vue') },
+  { path: '/register',      component: () => import('../views/RegisterView.vue') },
+  { path: '/catalogue',     component: () => import('../views/CatalogueView.vue') },
+  { path: '/product/:id',   component: () => import('../views/ProductDetailView.vue') },
+  { path: '/cart',          component: () => import('../views/CartView.vue') },
   {
     path: '/checkout',
     component: () => import('../views/CheckoutView.vue'),
