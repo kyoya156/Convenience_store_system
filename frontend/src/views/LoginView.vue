@@ -1,7 +1,7 @@
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { ref, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
 const auth   = useAuthStore()
@@ -10,6 +10,12 @@ const email    = ref('')
 const password = ref('')
 const error    = ref('')
 const loading  = ref(false)
+
+const route = useRoute()
+const showPass = ref(false)
+const passwordType = computed(() => (showPass.value ? 'text' : 'password'))
+
+
 
 async function handleLogin() {
   error.value   = ''
@@ -27,6 +33,14 @@ async function handleLogin() {
   } finally {
     loading.value = false
   }
+
+  await auth.login(email.value, password.value)
+
+  const target =
+    route.query.redirect ||
+    (auth.isAdmin ? '/admin' : '/catalogue')
+
+  router.push(target)
 }
 </script>
 
@@ -47,6 +61,21 @@ async function handleLogin() {
           placeholder="you@example.com"
           @keyup.enter="handleLogin"
         />
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <div class="password-wrap">
+          <input
+            v-model="password"
+            :type="passwordType"
+            placeholder="Your password"
+            @keyup.enter="handleLogin"
+          />
+          <button type="button" class="toggle-pass" @click="showPass = !showPass">
+            {{ showPass ? 'Hide' : 'Show' }}
+          </button>
+        </div>
       </div>
 
       <div class="form-group">
@@ -150,5 +179,15 @@ h1 { font-size: 1.8rem; margin-bottom: 0.25rem; color: #2c3e50; }
   font-size: 0.8rem;
   margin-right: 0.5rem;
 }
+
+.password-wrap { position: relative; }
+.toggle-pass{
+  position:absolute; right:10px; top:50%;
+  transform:translateY(-50%);
+  border:1px solid #ddd; background:#ecf0f1;
+  border-radius:6px; padding:6px 10px;
+  font-size:0.8rem; cursor:pointer;
+}
+
 .btn-demo:hover { background: #dfe6e9; }
 </style>
