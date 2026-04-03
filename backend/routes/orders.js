@@ -1,15 +1,29 @@
-const express          = require('express')
-const db               = require('../db/database')
-const { requireAuth }  = require('../middleware/auth')
-const router           = express.Router()
+const express = require('express')
+const db = require('../db/database')
+const { requireAuth } = require('../middleware/auth')
+const router = express.Router()
 
 // POST /api/orders
 router.post('/', requireAuth, (req, res) => {
-  const { items, deliveryAddress, notes } = req.body
+  const { deliveryAddress, notes } = req.body
 
-  if (!items?.length)   return res.status(400).json({ error: 'Cart is empty' })
   if (!deliveryAddress) return res.status(400).json({ error: 'Delivery address is required' })
 
+  // Get cart items with product details
+  const items = db.prepare(`
+    SELECT ci.product_id as productId,
+          ci.quantity,
+          p.price as unitPrice
+    FROM cart_items ci
+    JOIN products p ON p.id = ci.product_id
+    WHERE ci.user_id = ?
+  `).all(req.user.id)
+
+  // Validate cart is not empty
+  if (!items.length)
+    return res.status(400).json({ error: 'Cart is empty' })
+
+  // Calculate total and attempt to place order in a transaction
   const total = items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0)
 
   const placeOrder = db.transaction(() => {
@@ -18,7 +32,7 @@ router.post('/', requireAuth, (req, res) => {
       VALUES (?, ?, ?, ?)
     `).run(req.user.id, total, deliveryAddress, notes || null)
 
-    const insertItem  = db.prepare(`
+    const insertItem = db.prepare(`
       INSERT INTO order_items (order_id, product_id, quantity, unit_price)
       VALUES (?, ?, ?, ?)
     `)
@@ -33,6 +47,11 @@ router.post('/', requireAuth, (req, res) => {
       if (result.changes === 0)
         throw new Error(`Not enough stock for product ID ${item.productId}`)
     }
+
+    // Clear the cart after placing the order
+    db.prepare(`
+      DELETE FROM cart_items WHERE user_id = ?
+    `).run(req.user.id)
 
     return order.lastInsertRowid
   })
