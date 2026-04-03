@@ -1,58 +1,57 @@
-<script setup>
-import { useAuthStore } from '@/stores/auth'
-import { ref, computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+  <script setup>
+  import { useAuthStore } from '@/stores/auth'
+  import { ref, computed } from 'vue'
+  import { useRouter, useRoute } from 'vue-router'
 
-const router = useRouter()
-const route  = useRoute()
-const auth   = useAuthStore()
+  const router = useRouter()
+  const route  = useRoute()
+  const auth   = useAuthStore()
 
-const email    = ref('')
-const password = ref('')
-const error    = ref('')
-const loading  = ref(false)
+  const email    = ref('')
+  const password = ref('')
+  const error    = ref('')
+  const loading  = ref(false)
 
-const showPass = ref(false)
-const passwordType = computed(() => (showPass.value ? 'text' : 'password'))
+  const showPass = ref(false)
+  const passwordType = computed(() => (showPass.value ? 'text' : 'password'))
 
-// Detect if error likely means "account not found"
-const showRegisterSuggestion = computed(() =>
-  error.value.toLowerCase().includes('not found') ||
-  error.value.toLowerCase().includes('no account')
-)
+  // Detect if error likely means "account not found"
+  const showRegisterSuggestion = computed(() =>
+    error.value.toLowerCase().includes('no account')
+  )
 
-async function handleLogin() {
-  error.value   = ''
-  loading.value = true
+  async function handleLogin() {
+    error.value   = ''
+    loading.value = true
 
-  if (!email.value.trim()) {
-    error.value = 'Email is required'
-    loading.value = false
-    return
+    if (!email.value.trim()) {
+      error.value = 'Email is required'
+      loading.value = false
+      return
+    }
+
+    if (!password.value) {
+      error.value = 'Password is required'
+      loading.value = false
+      return
+    }
+
+    try {
+      await auth.login(email.value, password.value)
+
+      const target =
+        route.query.redirect ||
+        (auth.isAdmin ? '/admin' : '/catalogue')
+
+      router.push(target)
+    } catch (err) {
+      error.value =
+        err.response?.data?.error ||
+        'Login failed. Please try again.'
+    } finally {
+      loading.value = false
+    }
   }
-
-  if (!password.value) {
-    error.value = 'Password is required'
-    loading.value = false
-    return
-  }
-
-  try {
-    await auth.login(email.value, password.value)
-
-    const target =
-      route.query.redirect ||
-      (auth.isAdmin ? '/admin' : '/catalogue')
-
-    router.push(target)
-  } catch (err) {
-    error.value =
-      err.response?.data?.error ||
-      'Login failed. Please try again.'
-  } finally {
-    loading.value = false
-  }
-}
 </script>
 
 <template>
@@ -65,7 +64,7 @@ async function handleLogin() {
       <div v-if="error" class="alert alert-error">
         {{ error }}
 
-        <!-- 👉 Register suggestion appears ONLY when relevant -->
+        <!-- Register suggestion appears ONLY when relevant -->
         <div v-if="showRegisterSuggestion" style="margin-top: 0.5rem;">
           No account yet?
           <RouterLink to="/register">Register here</RouterLink>

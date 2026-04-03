@@ -15,13 +15,6 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = res.data.token
     user.value = res.data.user
     localStorage.setItem('token', token.value)
-  }
-
-  async function login(email, password) {
-    const res = await authApi.login({ email, password })
-    token.value = res.data.token
-    user.value = res.data.user
-    localStorage.setItem('token', token.value)
 
     const cart = useCartStore()
     await cart.fetchCart()
