@@ -111,16 +111,23 @@ async function confirmOrder() {
     const tax = subtotal * TAX_RATE
     const total = subtotal + tax + DELIVERY_FEE
     snapshot.value = {
-      items: cart.items.map(i => ({ product: { ...i.product }, quantity: i.quantity })),
+    items: cart.items.map(i => ({
+      product: {
+        id: i.productId,
+        name: i.name,
+        price: i.unitPrice
+      },
+      quantity: i.quantity
+    })),
       subtotal,
       tax,
       total,
     }
 
     const itemsPayload = cart.items.map(i => ({
-      productId: i.product.id,
+      productId: i.productId,
       quantity: i.quantity,
-      unitPrice: i.product.price,
+      unitPrice: i.unitPrice,
     }))
 
     const res = await orderApi.create({
@@ -297,10 +304,12 @@ function goOrders() {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="it in displayItems" :key="it.product.id">
-                <td>{{ it.product.name }}</td>
+              <tr v-for="it in displayItems" :key="it.product?.id || it.productId">
+                <td>{{ it.product?.name || it.name || 'Unknown Product' }}</td>
                 <td class="right">{{ it.quantity }}</td>
-                <td class="right">{{ money(it.product.price * it.quantity) }}</td>
+                <td class="right">
+                  {{ money((it.product?.price ?? it.unitPrice ?? 0) * it.quantity) }}
+                </td>
               </tr>
             </tbody>
           </table>
