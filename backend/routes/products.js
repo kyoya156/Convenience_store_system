@@ -8,8 +8,10 @@ const router               = express.Router()
  * by price and newest arrivals as requested.
  */
 router.get('/', (req, res) => {
-  const { category, search, sort } = req.query
-  let   query  = "SELECT * FROM products WHERE status = 'active'"
+  const { category, search, sort, status } = req.query
+  let query = status === 'all' 
+    ? "SELECT * FROM products WHERE 1=1" 
+    : "SELECT * FROM products WHERE status = 'active'"
   const params = []
 
   if (category) { query += ' AND category = ?';       params.push(category) }
