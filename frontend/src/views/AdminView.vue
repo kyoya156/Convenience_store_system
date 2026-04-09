@@ -4,11 +4,11 @@ import { productApi } from '@/api/products'
 
 const products = ref([])
 const loading = ref(true)
-const editingProduct = ref(null) // Holds the product currently being edited
+const editingProduct = ref(null)
 
 async function loadProducts() {
   try {
-    const res = await productApi.getAll({ status: 'all' }) // Staff needs to see archived items too
+    const res = await productApi.getAll({ status: 'all' })
     products.value = res.data
   } catch (err) {
     console.error('Failed to load inventory', err)
@@ -19,17 +19,30 @@ async function loadProducts() {
 
 async function handleUpdate() {
   try {
-    await productApi.update(editingProduct.value.id, editingProduct.value)
+    // 1. Prepare data - ensure numbers are actual Numbers, not strings from the input
+    const payload = {
+      ...editingProduct.value,
+      price: Number(editingProduct.value.price),
+      stock: Number(editingProduct.value.stock),
+      image_url: editingProduct.value.image_url || ''
+    }
+
+    // 2. Call API
+    await productApi.update(payload.id, payload)
+    
+    // 3. Reset and Refresh
     editingProduct.value = null
-    await loadProducts() // Refresh the list
+    await loadProducts() 
     alert('Product updated successfully!')
   } catch (err) {
-    alert('Update failed: ' + (err.response?.data?.error || 'Unknown error'))
+    console.error('Update Error:', err.response || err)
+    const errorMsg = err.response?.data?.error || err.message || 'Unknown error'
+    alert('Update failed: ' + errorMsg)
   }
 }
 
 function startEdit(product) {
-  editingProduct.value = { ...product } // Create a copy to edit
+  editingProduct.value = { ...product }
 }
 
 onMounted(loadProducts)
@@ -48,6 +61,7 @@ onMounted(loadProducts)
       <table class="inventory-table">
         <thead>
           <tr>
+            <th>Image</th>
             <th>Product</th>
             <th>Category</th>
             <th>Price</th>
@@ -58,6 +72,11 @@ onMounted(loadProducts)
         </thead>
         <tbody>
           <tr v-for="p in products" :key="p.id">
+            <td>
+              <img :src="p.image_url || 'https://placehold.co/50x50?text=No+Img'" 
+                  style="width: 45px; height: 45px; object-fit: cover; border-radius: 6px; background: #f0f0f0;" />
+            </td>
+
             <td><strong>{{ p.name }}</strong></td>
             <td>{{ p.category }}</td>
             <td>${{ p.price.toFixed(2) }}</td>
@@ -112,21 +131,21 @@ onMounted(loadProducts)
 </template>
 
 <style scoped>
+/* Keeping your existing styles */
 .admin-container { padding: 2rem; max-width: 1200px; margin: 0 auto; }
-.inventory-table { width: 100%; border-collapse: collapse; background: var(--bg); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
-th, td { padding: 1.2rem; text-align: left; border-bottom: 1px solid var(--border); }
+.inventory-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+th, td { padding: 1.2rem; text-align: left; border-bottom: 1px solid #eee; }
 .low-stock { color: #e74c3c; font-weight: bold; }
 .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; text-transform: uppercase; }
 .status-badge.active { background: #eafaf1; color: #27ae60; }
-.btn-edit { background: var(--accent); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+.btn-edit { background: #3498db; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
 
-/* Modal Styles */
 .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-.edit-modal { background: white; padding: 2rem; border-radius: 16px; width: 500px; box-shadow: var(--shadow); }
+.edit-modal { background: white; padding: 2rem; border-radius: 16px; width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
 .form-grid { display: grid; gap: 1rem; margin-bottom: 2rem; }
-.field label { display: block; margin-bottom: 0.5rem; font-weight: bold; color: var(--text-h); }
-.field input, .field select { width: 100%; padding: 0.8rem; border: 1px solid var(--border); border-radius: 8px; }
+.field label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
+.field input, .field select { width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; }
 .modal-actions { display: flex; gap: 1rem; justify-content: flex-end; }
-.btn-save { background: var(--accent); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer; }
-.btn-cancel { background: none; border: 1px solid var(--border); padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer; }
+.btn-save { background: #27ae60; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer; }
+.btn-cancel { background: none; border: 1px solid #ddd; padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer; }
 </style>

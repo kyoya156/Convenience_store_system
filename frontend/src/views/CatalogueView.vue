@@ -94,11 +94,11 @@ onMounted(loadProducts)
 
     <!-- Product Grid -->
     <div v-else class="product-grid">
-      <div
-        v-for="product in products"
-        :key="product.id"
-        class="product-card"
-      >
+            <div v-for="product in products" :key="product.id" class="product-card">
+        <div style="width: 100%; height: 180px; background: #f9f9f9; overflow: hidden;">
+          <img :src="product.image_url || 'https://placehold.co/400x400?text=No+Image'" 
+              style="width: 100%; height: 100%; object-fit: cover;" />
+        </div>
         <!-- Category badge -->
         <span class="badge">{{ product.category }}</span>
 
