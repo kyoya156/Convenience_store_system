@@ -3,9 +3,11 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { productApi } from '@/api/products'
 import { useCartStore } from '@/stores/cart'
+import { useAuthStore } from '@/stores/auth'
 
 const router   = useRouter()
 const cart     = useCartStore()
+const auth     = useAuthStore()
 
 const products  = ref([])
 const loading   = ref(false)
@@ -33,9 +35,14 @@ async function loadProducts() {
 }
 
 function addToCart(product) {
+  if (!auth.isLoggedIn) {
+    router.push('/login')
+    return
+  }
+
   cart.addItem(product, 1)
   added.value = product.id
-  setTimeout(() => added.value = null, 1500)  // reset feedback after 1.5s
+  setTimeout(() => added.value = null, 1500)
 }
 
 function clearFilters() {
