@@ -2,6 +2,7 @@
 import { RouterView, RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useCartStore  } from '@/stores/cart'
+import { onMounted } from 'vue'
 
 const auth   = useAuthStore()
 const cart   = useCartStore()
@@ -11,6 +12,13 @@ function logout() {
   auth.logout()
   router.push('/login')
 }
+
+onMounted(() => {
+  if (auth.isLoggedIn) {
+    cart.fetchCart()
+  }
+})
+
 </script>
 
 <template>

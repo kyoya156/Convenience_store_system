@@ -1,39 +1,68 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { cartApi } from '../api/cart'
 
 export const useCartStore = defineStore('cart', () => {
-  const items = ref([])   // [{ product, quantity }]
+  const items = ref([])
 
+  // total price of items in cart
   const total = computed(() =>
-    items.value.reduce((sum, i) => sum + i.product.price * i.quantity, 0)
+    items.value.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0)
   )
 
   const count = computed(() =>
     items.value.reduce((sum, i) => sum + i.quantity, 0)
   )
 
-  function addItem(product, quantity = 1) {
-    const existing = items.value.find(i => i.product.id === product.id)
-    if (existing) {
-      existing.quantity += quantity
-    } else {
-      items.value.push({ product, quantity })
+  // load cart from backend
+  async function fetchCart() {
+    const res = await cartApi.get()
+    items.value = res.data
+  }
+
+  // add item via backend
+  async function addItem(product, quantity = 1) {
+    try {
+      await cartApi.add({
+        productId: product.id,
+        quantity
+      })
+      await fetchCart()
+    } catch (err) {
+      console.error('Add to cart failed:', err)
     }
   }
 
-  function removeItem(productId) {
-    items.value = items.value.filter(i => i.product.id !== productId)
+  // remove item from cart
+  async function removeItem(productId) {
+    await cartApi.remove(productId)
+    await fetchCart()
   }
 
-  function updateQuantity(productId, quantity) {
-    if (quantity <= 0) { removeItem(productId); return }
-    const item = items.value.find(i => i.product.id === productId)
-    if (item) item.quantity = quantity
+  // update quantity, if quantity <= 0 then remove item
+  async function updateQuantity(productId, quantity) {
+    if (quantity <= 0) {
+      await removeItem(productId)
+      return
+    }
+    await cartApi.update(productId, { quantity })
+    await fetchCart()
   }
 
-  function clearCart() {
+  // clear cart on logout
+  async function clearCart() {
+    await cartApi.clear()
     items.value = []
   }
 
-  return { items, total, count, addItem, removeItem, updateQuantity, clearCart }
+  return {
+    items,
+    total,
+    count,
+    fetchCart,
+    addItem,
+    removeItem,
+    updateQuantity,
+    clearCart
+  }
 })

@@ -1,5 +1,5 @@
 const Database = require('better-sqlite3')
-const path     = require('path')
+const path = require('path')
 
 // Store the database file in the db/ folder
 const db = new Database(path.join(__dirname, 'store.db'), {
@@ -62,6 +62,15 @@ db.exec(`
     quantity   INTEGER NOT NULL CHECK(quantity > 0),
     unit_price REAL    NOT NULL
   );
+
+  CREATE TABLE IF NOT EXISTS cart_items (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    product_id INTEGER NOT NULL REFERENCES products(id),
+    quantity   INTEGER NOT NULL CHECK(quantity > 0),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, product_id)
+  );
 `)
 
 // Seed data
@@ -79,11 +88,11 @@ if (userCount.count === 0) {
     VALUES (?, ?, ?, ?, ?, ?)
   `)
 
-  insertProduct.run('Mineral Water 500ml', 'Fresh mineral water', 0.99, 100, 'drinks', 'https://placehold.co/400x400?text=Water')
-  insertProduct.run('Instant Noodles', 'Quick and easy meal', 1.49, 50, 'food', 'https://placehold.co/400x400?text=Noodles')
-  insertProduct.run('Green Tea', 'Premium green tea', 2.99, 75, 'drinks', 'https://placehold.co/400x400?text=Green+Tea')
-  insertProduct.run('Chocolate Bar', 'Milk chocolate', 1.29, 60, 'snacks', 'https://placehold.co/400x400?text=Chocolate')
-  insertProduct.run('White Rice 1kg', 'Jasmine white rice', 3.49, 40, 'food', 'https://placehold.co/400x400?text=Rice')
+  insertProduct.run('Mineral Water 500ml', 'Fresh mineral water', 0.99,  100, 'drinks')
+  insertProduct.run('Instant Noodles',     'Quick and easy meal',  1.49,  50,  'food')
+  insertProduct.run('Green Tea',           'Premium green tea',    2.99,  75,  'drinks')
+  insertProduct.run('Chocolate Bar',       'Milk chocolate',       1.29,  60,  'snacks')
+  insertProduct.run('White Rice 1kg',      'Jasmine white rice',   3.49,  40,  'food')
 
   console.log('✅ Database seeded successfully')
 }
