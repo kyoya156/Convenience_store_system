@@ -58,7 +58,7 @@
   <div class="auth-page">
     <div class="auth-card">
       <h1>Login</h1>
-      <p class="auth-sub">Welcome back to Local Store</p>
+      <p class="auth-sub">Welcome back to Your Local Store</p>
 
       <!-- Error message -->
       <div v-if="error" class="alert alert-error">
@@ -179,7 +179,7 @@ h1 { font-size: 1.8rem; margin-bottom: 0.25rem; color: #2c3e50; }
 }
 .demo-hint p { margin-bottom: 0.5rem; }
 .btn-demo {
-  background: #ecf0f1;
+  background: #2c3e50;
   border: 1px solid #ddd;
   padding: 0.3rem 0.8rem;
   border-radius: 4px;
@@ -192,7 +192,7 @@ h1 { font-size: 1.8rem; margin-bottom: 0.25rem; color: #2c3e50; }
 .toggle-pass{
   position:absolute; right:10px; top:50%;
   transform:translateY(-50%);
-  border:1px solid #ddd; background:#ecf0f1;
+  border:1px solid #ddd; background:#2c3e50;
   border-radius:6px; padding:6px 10px;
   font-size:0.8rem; cursor:pointer;
 }

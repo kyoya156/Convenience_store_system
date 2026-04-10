@@ -132,6 +132,7 @@ onMounted(loadProducts)
 
 <style scoped>
 /* Keeping your existing styles */
+h2 {color: #000000}
 .admin-container { padding: 2rem; max-width: 1200px; margin: 0 auto; }
 .inventory-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
 th, td { padding: 1.2rem; text-align: left; border-bottom: 1px solid #eee; }
@@ -147,5 +148,5 @@ th, td { padding: 1.2rem; text-align: left; border-bottom: 1px solid #eee; }
 .field input, .field select { width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; }
 .modal-actions { display: flex; gap: 1rem; justify-content: flex-end; }
 .btn-save { background: #27ae60; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer; }
-.btn-cancel { background: none; border: 1px solid #ddd; padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer; }
+.btn-cancel { background: #e74c3c; border: 1px solid #ddd; padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer; }
 </style>

@@ -128,6 +128,7 @@ function proceedToCheckout() {
 
 <style scoped>
 h1 { font-size: 1.8rem; color: #2c3e50; margin-bottom: 1.5rem; }
+ p { color: #000000; }
 
 .empty-cart {
   text-align: center;

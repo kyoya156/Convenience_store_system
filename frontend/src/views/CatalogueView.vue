@@ -171,7 +171,7 @@ onMounted(loadProducts)
   border: 1px solid #ddd;
   border-radius: 6px;
   font-size: 0.95rem;
-  background: white;
+  background: #2c3e50;
   cursor: pointer;
 }
 
@@ -272,7 +272,7 @@ onMounted(loadProducts)
 .btn-detail {
   flex: 1;
   padding: 0.55rem;
-  background: #ecf0f1;
+  background: #2c3e50;
   border: 1px solid #ddd;
   border-radius: 6px;
   cursor: pointer;

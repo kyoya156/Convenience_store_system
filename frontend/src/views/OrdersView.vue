@@ -103,7 +103,7 @@ h1 { font-size: 1.8rem; color: #2c3e50; margin-bottom: 1.5rem; }
   margin-bottom: 1rem;
 }
 .order-header h3 { font-size: 1.05rem; color: #2c3e50; }
-.order-date { font-size: 0.82rem; color: #aaa; margin-top: 0.2rem; }
+.order-date { font-size: 0.82rem; color: #000000; margin-top: 0.2rem; }
 
 .status-badge {
   color: white;
