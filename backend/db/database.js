@@ -73,27 +73,32 @@ db.exec(`
   );
 `)
 
-// Seed data
+// Seed data (transaction: if any step fails, nothing is committed — next boot retries)
 const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get()
 if (userCount.count === 0) {
   const bcrypt = require('bcryptjs')
+  const seed = db.transaction(() => {
+    db.prepare(`
+      INSERT INTO users (name, email, password, role)
+      VALUES (?, ?, ?, ?)
+    `).run('Admin', 'admin@store.com', bcrypt.hashSync('admin123', 10), 'admin')
 
-  db.prepare(`
-    INSERT INTO users (name, email, password, role)
-    VALUES (?, ?, ?, ?)
-  `).run('Admin', 'admin@store.com', bcrypt.hashSync('admin123', 10), 'admin')
+    const insertProduct = db.prepare(`
+      INSERT INTO products (name, description, price, stock, category, image_url)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `)
 
-  const insertProduct = db.prepare(`
-    INSERT INTO products (name, description, price, stock, category, image_url)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `)
+    const p = (name, description, price, stock, category, imageUrl = null) =>
+      insertProduct.run(name, description, price, stock, category, imageUrl)
 
-  insertProduct.run('Mineral Water 500ml', 'Fresh mineral water', 0.99,  100, 'drinks')
-  insertProduct.run('Instant Noodles',     'Quick and easy meal',  1.49,  50,  'food')
-  insertProduct.run('Green Tea',           'Premium green tea',    2.99,  75,  'drinks')
-  insertProduct.run('Chocolate Bar',       'Milk chocolate',       1.29,  60,  'snacks')
-  insertProduct.run('White Rice 1kg',      'Jasmine white rice',   3.49,  40,  'food')
+    p('Mineral Water 500ml', 'Fresh mineral water', 0.99, 100, 'drinks')
+    p('Instant Noodles', 'Quick and easy meal', 1.49, 50, 'food')
+    p('Green Tea', 'Premium green tea', 2.99, 75, 'drinks')
+    p('Chocolate Bar', 'Milk chocolate', 1.29, 60, 'snacks')
+    p('White Rice 1kg', 'Jasmine white rice', 3.49, 40, 'food')
+  })
 
+  seed()
   console.log('✅ Database seeded successfully')
 }
 
