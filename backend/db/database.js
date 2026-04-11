@@ -82,6 +82,11 @@ if (userCount.count === 0) {
       INSERT INTO users (name, email, password, role)
       VALUES (?, ?, ?, ?)
     `).run('Admin', 'admin@store.com', bcrypt.hashSync('admin123', 10), 'admin')
+    
+    db.prepare(`
+      INSERT INTO users (name, email, password, role)
+      VALUES (?, ?, ?, ?)
+    `).run('Customer Demo', 'user@store.com', bcrypt.hashSync('user123', 10), 'customer')
 
     const insertProduct = db.prepare(`
       INSERT INTO products (name, description, price, stock, category, image_url)

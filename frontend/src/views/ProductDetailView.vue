@@ -70,6 +70,7 @@ onMounted(loadProduct)
         </div>
 
         <button
+        v-if="auth.user?.role !== 'admin'"
           class="btn-cart"
           @click="addToCart"
           :disabled="product.stock === 0"
@@ -77,6 +78,16 @@ onMounted(loadProduct)
         >
           {{ added ? '✓ Added to Cart!' : 'Add to Cart' }}
         </button>
+
+        <button 
+        v-if="auth.user?.role !== 'admin'" 
+        class="btn-add-main" 
+        @click="addToCart"
+      >
+        {{ added ? '✓ Added to Cart' : 'Add to Cart' }}
+      </button>
+
+      <p v-else class="admin-warning">Viewing as Admin: Purchase disabled</p>
 
         <div v-if="added" class="cart-hint">
           <RouterLink to="/cart">View Cart →</RouterLink>

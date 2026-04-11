@@ -14,7 +14,7 @@ function logout() {
 }
 
 onMounted(() => {
-  if (auth.isLoggedIn) {
+  if (auth.isLoggedIn && !auth.isAdmin) {
     cart.fetchCart()
   }
 })
@@ -29,13 +29,13 @@ onMounted(() => {
       </div>
 
       <div class="nav-links">
-        <RouterLink to="/cart" class="cart-link">
+        <RouterLink v-if="!auth.isAdmin" to="/cart" class="cart-link">
           Cart
           <span v-if="cart.count > 0" class="cart-badge">{{ cart.count }}</span>
         </RouterLink>
 
         <template v-if="auth.isLoggedIn">
-          <RouterLink to="/orders">My Orders</RouterLink>
+          <RouterLink v-if="!auth.isAdmin" to="/orders">My Orders</RouterLink>
           <RouterLink v-if="auth.isAdmin" to="/admin">Admin</RouterLink>
           <span class="nav-user">Hi, {{ auth.user?.name }}</span>
           <button class="btn-logout" @click="logout">Logout</button>

@@ -111,6 +111,10 @@
         <button class="btn-demo" @click="email = 'admin@store.com'; password = 'admin123'">
           Fill Admin
         </button>
+        
+        <button class="btn-demo" @click="email = 'user@store.com'; password = 'user123'">
+          Fill Customer
+        </button>
       </div>
     </div>
   </div>
