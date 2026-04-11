@@ -128,7 +128,8 @@ function proceedToCheckout() {
 
 <style scoped>
 h1 { font-size: 1.8rem; color: #2c3e50; margin-bottom: 1.5rem; }
- p { color: #000000; }
+h2 { color: #2c3e50; }
+p { color: #000000; }
 
 .empty-cart {
   text-align: center;
@@ -175,6 +176,7 @@ h1 { font-size: 1.8rem; color: #2c3e50; margin-bottom: 1.5rem; }
 }
 
 .qty-btn {
+  color: #000000;
   width: 30px;
   height: 30px;
   border: 1px solid #ddd;
@@ -248,6 +250,6 @@ h1 { font-size: 1.8rem; color: #2c3e50; margin-bottom: 1.5rem; }
   border: 1px solid #eee;
   background: none;
   border-radius: 6px;
-  color: #aaa;
+  color: #000000;
 }
 </style>

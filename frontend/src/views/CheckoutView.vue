@@ -459,6 +459,11 @@ h1 {
   margin: 0 0 1rem;
 }
 
+h2 {
+  color: #10324a;
+  margin: 0 0 0.75rem;
+}
+
 .checkout-grid {
   display: grid;
   grid-template-columns: 1.2fr 0.8fr;
@@ -536,7 +541,7 @@ textarea { resize: vertical; }
 }
 .btn.primary {
   background: linear-gradient(180deg, #7bb6ff 0%, #4a95ff 100%);
-  color: #fff;
+  color: #ffffff;
 }
 .btn.primary:disabled { opacity: 0.6; cursor: not-allowed; }
 .btn.ghost {
