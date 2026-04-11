@@ -188,7 +188,7 @@ onMounted(loadProducts)
 
 .btn-clear {
   padding: 0.6rem 1rem;
-  background: #ecf0f1;
+  background: #2c3e50;
   border: 1px solid #ddd;
   border-radius: 6px;
   cursor: pointer;
