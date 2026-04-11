@@ -43,6 +43,10 @@ Thumbs.db
 *.sqlite
 *.sqlite3
 *.db
+# WAL mode sidecars — not matched by *.db (they end in -wal / -shm / -journal)
+*.db-wal
+*.db-shm
+*.db-journal
 
 
 # wrangler files
