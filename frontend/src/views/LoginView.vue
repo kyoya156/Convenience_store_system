@@ -1,57 +1,75 @@
-<script setup>
-import { useAuthStore } from '@/stores/auth'
-import { ref, computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+  <script setup>
+  import { useAuthStore } from '@/stores/auth'
+  import { ref, computed } from 'vue'
+  import { useRouter, useRoute } from 'vue-router'
 
-const router = useRouter()
-const auth   = useAuthStore()
+  const router = useRouter()
+  const route  = useRoute()
+  const auth   = useAuthStore()
 
-const email    = ref('')
-const password = ref('')
-const error    = ref('')
-const loading  = ref(false)
+  const email    = ref('')
+  const password = ref('')
+  const error    = ref('')
+  const loading  = ref(false)
 
-const route = useRoute()
-const showPass = ref(false)
-const passwordType = computed(() => (showPass.value ? 'text' : 'password'))
+  const showPass = ref(false)
+  const passwordType = computed(() => (showPass.value ? 'text' : 'password'))
 
+  // Detect if error likely means "account not found"
+  const showRegisterSuggestion = computed(() =>
+    error.value.toLowerCase().includes('no account')
+  )
 
+  async function handleLogin() {
+    error.value   = ''
+    loading.value = true
 
-async function handleLogin() {
-  error.value   = ''
-  loading.value = true
+    if (!email.value.trim()) {
+      error.value = 'Email is required'
+      loading.value = false
+      return
+    }
 
-  // Basic validation
-  if (!email.value.trim())    { error.value = 'Email is required';    loading.value = false; return }
-  if (!password.value)        { error.value = 'Password is required'; loading.value = false; return }
+    if (!password.value) {
+      error.value = 'Password is required'
+      loading.value = false
+      return
+    }
 
-  try {
-    await auth.login(email.value, password.value)
-    router.push('/')   // redirect home after login
-  } catch (err) {
-    error.value = err.response?.data?.error || 'Login failed. Please try again.'
-  } finally {
-    loading.value = false
+    try {
+      await auth.login(email.value, password.value)
+
+      const target =
+        route.query.redirect ||
+        (auth.isAdmin ? '/admin' : '/catalogue')
+
+      router.push(target)
+    } catch (err) {
+      error.value =
+        err.response?.data?.error ||
+        'Login failed. Please try again.'
+    } finally {
+      loading.value = false
+    }
   }
-
-  await auth.login(email.value, password.value)
-
-  const target =
-    route.query.redirect ||
-    (auth.isAdmin ? '/admin' : '/catalogue')
-
-  router.push(target)
-}
 </script>
 
 <template>
   <div class="auth-page">
     <div class="auth-card">
       <h1>Login</h1>
-      <p class="auth-sub">Welcome back to Local Store</p>
+      <p class="auth-sub">Welcome back to Your Local Store</p>
 
       <!-- Error message -->
-      <div v-if="error" class="alert alert-error">{{ error }}</div>
+      <div v-if="error" class="alert alert-error">
+        {{ error }}
+
+        <!-- Register suggestion appears ONLY when relevant -->
+        <div v-if="showRegisterSuggestion" style="margin-top: 0.5rem;">
+          No account yet?
+          <RouterLink to="/register">Register here</RouterLink>
+        </div>
+      </div>
 
       <div class="form-group">
         <label>Email</label>
@@ -76,16 +94,6 @@ async function handleLogin() {
             {{ showPass ? 'Hide' : 'Show' }}
           </button>
         </div>
-      </div>
-
-      <div class="form-group">
-        <label>Password</label>
-        <input
-          v-model="password"
-          type="password"
-          placeholder="Your password"
-          @keyup.enter="handleLogin"
-        />
       </div>
 
       <button class="btn-primary" @click="handleLogin" :disabled="loading">
@@ -171,7 +179,7 @@ h1 { font-size: 1.8rem; margin-bottom: 0.25rem; color: #2c3e50; }
 }
 .demo-hint p { margin-bottom: 0.5rem; }
 .btn-demo {
-  background: #ecf0f1;
+  background: #2c3e50;
   border: 1px solid #ddd;
   padding: 0.3rem 0.8rem;
   border-radius: 4px;
@@ -184,7 +192,7 @@ h1 { font-size: 1.8rem; margin-bottom: 0.25rem; color: #2c3e50; }
 .toggle-pass{
   position:absolute; right:10px; top:50%;
   transform:translateY(-50%);
-  border:1px solid #ddd; background:#ecf0f1;
+  border:1px solid #ddd; background:#2c3e50;
   border-radius:6px; padding:6px 10px;
   font-size:0.8rem; cursor:pointer;
 }
